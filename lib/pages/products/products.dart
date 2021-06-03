@@ -42,8 +42,8 @@ class _ProductsState extends State<Products> {
                           Icon(Icons.description),
                           Text(description),
                           Padding(padding: EdgeInsets.only(left: 8)),
-                          Icon(Icons.email),
-                          Text(price),
+                          Icon(Icons.attach_money),
+                          Text(price + ' dollars'),
                         ],
                       ),
                       Text(categoryName)

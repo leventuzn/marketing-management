@@ -43,7 +43,7 @@ class _AddServiceState extends State<AddService> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('Ürün Ekle'),
+        title: Text('Hizmet Ekle'),
       ),
       body: Form(
         key: _formKey,
