@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  UserCredential userCredential;
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  String admin = "admin@admin.com";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,6 +47,7 @@ class LoginPage extends StatelessWidget {
                     icon: Icon(Icons.alternate_email),
                     labelText: 'E-posta',
                   ),
+                  controller: _emailController,
                 ),
                 SizedBox(
                   height: 5,
@@ -47,35 +59,42 @@ class LoginPage extends StatelessWidget {
                     icon: Icon(Icons.lock),
                     labelText: 'Şifre',
                   ),
+                  controller: _passwordController,
                   obscureText: true,
                 ),
                 //Buttons row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    //Forgot password
-                    TextButton(
-                      onPressed: null,
-                      child: const Text(
-                        'Şifremi unuttum',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
                     //Sign Up button
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () =>
+                            Navigator.pushNamed(context, '/sign_up'),
+                        child: const Text('Kaydol'),
                       ),
-                      onPressed: () => Navigator.pushNamed(context, '/sign_up'),
-                      child: const Text('Kaydol'),
                     ),
+                    Padding(padding: EdgeInsets.symmetric(horizontal: 5)),
                     //Login button
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          try {
+                            userCredential = await FirebaseAuth.instance
+                                .signInWithEmailAndPassword(
+                                    email: _emailController.text,
+                                    password: _passwordController.text);
+                            Navigator.pushNamed(context, '/home');
+                          } on FirebaseAuthException catch (e) {
+                            if (e.code == 'user-not-found') {
+                              print('No user found for that email.');
+                            } else if (e.code == 'wrong-password') {
+                              print('Wrong password provided for that user.');
+                            }
+                          }
+                        },
+                        child: const Text('Giriş'),
                       ),
-                      onPressed: () => Navigator.pushNamed(context, '/home'),
-                      child: const Text('Giriş'),
                     )
                   ],
                 )

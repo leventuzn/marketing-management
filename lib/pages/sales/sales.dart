@@ -1,18 +1,20 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class Categories extends StatefulWidget {
+class Sales extends StatefulWidget {
   @override
-  _CategoriesState createState() => _CategoriesState();
+  _SalesState createState() => _SalesState();
 }
 
-class _CategoriesState extends State<Categories> {
-  final CollectionReference categories =
-      FirebaseFirestore.instance.collection('categories');
-
-  Widget _listItem(String name, /*String type,*/ String id) {
+class _SalesState extends State<Sales> {
+  final CollectionReference sales =
+      FirebaseFirestore.instance.collection('sales');
+  final CollectionReference customers =
+      FirebaseFirestore.instance.collection('customers');
+  final dateFormat = new DateFormat('yyyy-MM-dd HH:mm');
+  Widget _listItem(
+      String customerId, Timestamp date, String totalPrice, String id) {
     return SafeArea(
       top: false,
       bottom: false,
@@ -24,41 +26,32 @@ class _CategoriesState extends State<Categories> {
         ),
         child: InkWell(
           onTap: () {
-            Navigator.pushNamed(context, '/update_category', arguments: id);
+            Navigator.pushNamed(context, '/sale_items', arguments: id);
           },
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  backgroundColor:
-                      Color((Random().nextDouble() * 0xFFFFFF).toInt())
-                          .withOpacity(1.0),
-                  child: Text(
-                    (name.substring(0, 2)).toUpperCase(),
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
                 Padding(padding: EdgeInsets.only(left: 16)),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(name),
+                      Text(customerId),
                       Padding(padding: EdgeInsets.only(top: 8)),
-                      //Text(type),
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_today),
+                          Text(dateFormat.format(date.toDate()).toString()),
+                          Padding(padding: EdgeInsets.only(left: 8)),
+                        ],
+                      ),
                     ],
                   ),
                 ),
                 Padding(padding: EdgeInsets.only(left: 8)),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    deleteCategory(id);
-                  },
-                  color: Colors.red,
-                )
+                Text(totalPrice)
               ],
             ),
           ),
@@ -67,18 +60,10 @@ class _CategoriesState extends State<Categories> {
     );
   }
 
-  Future<void> deleteCategory(String id) {
-    return categories
-        .doc(id)
-        .delete()
-        .then((value) => print("Category deleted"))
-        .catchError((error) => print("Failed to delete Category: $error"));
-  }
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: categories.orderBy('name').snapshots(),
+      stream: sales.orderBy('date').snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');
@@ -88,15 +73,12 @@ class _CategoriesState extends State<Categories> {
           return Text('Loading');
         }
 
-        if (!snapshot.hasData) {
-          return Text("Kayıt yok");
-        }
-
         return new ListView(
           children: snapshot.data.docs.map((DocumentSnapshot document) {
             return _listItem(
-              document.get('name'),
-              //document.data['type'],
+              document.get('customerId'),
+              document.get('date'),
+              document.get('totalPrice'),
               document.id,
             );
           }).toList(),

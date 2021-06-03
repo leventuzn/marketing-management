@@ -1,18 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class Services extends StatefulWidget {
+class Visits extends StatefulWidget {
   @override
-  _Services createState() => _Services();
+  _Visits createState() => _Visits();
 }
 
-class _Services extends State<Services> {
-  final CollectionReference services =
-      FirebaseFirestore.instance.collection('services');
-  String categoryName = "";
+class _Visits extends State<Visits> {
+  final CollectionReference visits =
+      FirebaseFirestore.instance.collection('visits');
+  final dateFormat = new DateFormat('yyyy-MM-dd HH:mm');
 
-  Widget _listItem(String name, String description, String price,
-      String category, String id) {
+  Widget _listItem(String customer, String name, Timestamp date, String id) {
     return SafeArea(
         top: false,
         bottom: false,
@@ -22,9 +22,7 @@ class _Services extends State<Services> {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
             child: InkWell(
-              onTap: () {
-                Navigator.pushNamed(context, '/update_service', arguments: id);
-              },
+              onTap: () {},
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Row(
@@ -41,11 +39,11 @@ class _Services extends State<Services> {
                         ),
                         Row(
                           children: [
-                            Icon(Icons.description),
-                            Text(category),
+                            Icon(Icons.person),
+                            Text(customer),
                             Padding(padding: EdgeInsets.only(left: 8)),
-                            Icon(Icons.attach_money),
-                            Text(price + " Dollars")
+                            Icon(Icons.calendar_today),
+                            Text(dateFormat.format(date.toDate()).toString())
                           ],
                         ),
                       ],
@@ -53,31 +51,16 @@ class _Services extends State<Services> {
                     Padding(
                       padding: EdgeInsets.only(left: 8),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        deleteService(id);
-                      },
-                      color: Colors.red,
-                    )
                   ],
                 ),
               ),
             )));
   }
 
-  Future<void> deleteService(String id) {
-    return services
-        .doc(id)
-        .delete()
-        .then((value) => print("Service deleted"))
-        .catchError((error) => print("Failed to delete service : $error"));
-  }
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-        stream: services.orderBy('name').snapshots(),
+        stream: visits.orderBy('name').snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return Text("Something went wrong");
@@ -85,23 +68,17 @@ class _Services extends State<Services> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Text('Loading...');
           }
+          if (!snapshot.hasData) {
+            return Text('Ziyaret geçmişi bulaunamadı');
+          }
 
           return new ListView(
             children: snapshot.data.docs.map((DocumentSnapshot document) {
-              return FutureBuilder(
-                future: document.get('category').get(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text("");
-                  }
-                  return _listItem(
-                    document.get('name'),
-                    document.get('description'),
-                    document.get('price'),
-                    snapshot.data['name'],
-                    document.id,
-                  );
-                },
+              return _listItem(
+                document.get('customer'),
+                document.get('name'),
+                document.get('date'),
+                document.id,
               );
             }).toList(),
           );

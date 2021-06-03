@@ -12,7 +12,8 @@ class _AddCustomerState extends State<AddCustomer> {
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference customers = Firestore.instance.collection('customers');
+    CollectionReference customers =
+        FirebaseFirestore.instance.collection('customers');
     final Customer customer = new Customer();
 
     Future<void> addCustomer() {
@@ -119,7 +120,7 @@ class _AddCustomerState extends State<AddCustomer> {
                 customer.identity = value;
               },
             ),
-            RaisedButton.icon(
+            ElevatedButton.icon(
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   addCustomer();

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-Firestore firestore = Firestore.instance;
+FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 class Customer {
   String firstName;

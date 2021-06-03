@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -9,7 +10,7 @@ class Customers extends StatefulWidget {
 
 class _CustomersState extends State<Customers> {
   final CollectionReference customers =
-      Firestore.instance.collection('customers');
+      FirebaseFirestore.instance.collection('customers');
 
   Widget _listItem(String firstname, String lastname, String phone,
       String email, String id) {
@@ -51,10 +52,26 @@ class _CustomersState extends State<Customers> {
                       Row(
                         children: [
                           Icon(Icons.phone),
-                          Text(phone),
+                          Flexible(
+                            flex: 1,
+                            child: AutoSizeText(
+                              phone,
+                              maxLines: 1,
+                              stepGranularity: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                           Padding(padding: EdgeInsets.only(left: 8)),
                           Icon(Icons.email),
-                          Text(email),
+                          Flexible(
+                            flex: 1,
+                            child: AutoSizeText(
+                              email,
+                              maxLines: 1,
+                              stepGranularity: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -78,10 +95,10 @@ class _CustomersState extends State<Customers> {
 
   Future<void> deleteCustomer(String id) {
     return customers
-        .document(id)
+        .doc(id)
         .delete()
-        .then((value) => print("User deleted"))
-        .catchError((error) => print("Failed to delete user: $error"));
+        .then((value) => print("Customer deleted"))
+        .catchError((error) => print("Failed to delete Customer: $error"));
   }
 
   @override
@@ -98,13 +115,13 @@ class _CustomersState extends State<Customers> {
         }
 
         return new ListView(
-          children: snapshot.data.documents.map((DocumentSnapshot document) {
+          children: snapshot.data.docs.map((DocumentSnapshot document) {
             return _listItem(
-              document.data['firstname'],
-              document.data['lastname'],
-              document.data['phone'],
-              document.data['email'],
-              document.documentID,
+              document.get('firstname'),
+              document.get('lastname'),
+              document.get('phone'),
+              document.get('email'),
+              document.id,
             );
           }).toList(),
         );

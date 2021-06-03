@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:itms_flutter/pages/Sales/invoices.dart';
-import 'package:itms_flutter/pages/Sales/sale_history.dart';
 import 'package:itms_flutter/pages/categories/categories.dart';
 import 'package:itms_flutter/pages/products/products.dart';
+import 'package:itms_flutter/pages/sales/sales.dart';
 import 'package:itms_flutter/pages/services/services.dart';
-
 import 'customers/customers.dart';
+import 'visits/visits.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -60,7 +59,10 @@ class _HomePageState extends State<HomePage> {
             ),
             //Categories
             ListTile(
-              leading: const Icon(Icons.category),
+              leading: const Icon(
+                Icons.category,
+                color: Colors.black,
+              ),
               title: const Text(
                 'Kategoriler',
                 style: TextStyle(fontSize: 20),
@@ -76,7 +78,10 @@ class _HomePageState extends State<HomePage> {
             ),
             //Customers
             ListTile(
-              leading: const Icon(Icons.people),
+              leading: const Icon(
+                Icons.people,
+                color: Colors.black,
+              ),
               title: const Text(
                 'Müşteriler',
                 style: TextStyle(fontSize: 20),
@@ -92,7 +97,10 @@ class _HomePageState extends State<HomePage> {
             ),
             //Products
             ListTile(
-              leading: const Icon(Icons.storefront),
+              leading: const Icon(
+                Icons.storefront,
+                color: Colors.black,
+              ),
               title: const Text(
                 'Ürünler',
                 style: TextStyle(fontSize: 20),
@@ -108,7 +116,10 @@ class _HomePageState extends State<HomePage> {
             ),
             //Services
             ListTile(
-              leading: const Icon(Icons.support_agent),
+              leading: const Icon(
+                Icons.support_agent,
+                color: Colors.black,
+              ),
               title: const Text(
                 'Hizmetler',
                 style: TextStyle(fontSize: 20),
@@ -123,46 +134,41 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             //Sales
-            ExpansionTile(
-              leading: const Icon(Icons.payments),
+            ListTile(
+              leading: const Icon(
+                Icons.payment,
+                color: Colors.black,
+              ),
               title: const Text(
                 'Satışlar',
                 style: TextStyle(fontSize: 20),
               ),
-              children: [
-                //Sale History
-                ListTile(
-                  leading: const Icon(Icons.timeline),
-                  title: const Text(
-                    'Satış Geçmişi',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  onTap: () {
-                    setState(() {
-                      _title = 'Satış Geçmişi';
-                      _page = SaleHistory();
-                      _route = '/add_sale';
-                    });
-                    Navigator.of(context).pop();
-                  },
-                ),
-                //Invoice
-                ListTile(
-                  leading: const Icon(Icons.receipt_long),
-                  title: const Text(
-                    'Faturalar',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  onTap: () {
-                    setState(() {
-                      _title = 'Faturalar';
-                      _page = Invoices();
-                      _route = '/add_invoice';
-                    });
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
+              onTap: () {
+                setState(() {
+                  _title = 'Satışlar';
+                  _page = Sales();
+                  _route = '/add_sale';
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.screen_search_desktop_outlined,
+                color: Colors.black,
+              ),
+              title: const Text(
+                'Ziyaretler',
+                style: TextStyle(fontSize: 20),
+              ),
+              onTap: () {
+                setState(() {
+                  _title = 'Ziyaretler';
+                  _page = Visits();
+                  _route = '/add_visit';
+                });
+                Navigator.of(context).pop();
+              },
             ),
           ],
         ),

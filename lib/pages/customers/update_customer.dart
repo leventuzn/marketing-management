@@ -26,7 +26,8 @@ class UpdateBody extends StatefulWidget {
 
 class _UpdateBodyState extends State<UpdateBody> {
   final _formKey = GlobalKey<FormState>();
-  CollectionReference customers = Firestore.instance.collection('customers');
+  CollectionReference customers =
+      FirebaseFirestore.instance.collection('customers');
   Customer customer;
 
   @override
@@ -34,8 +35,8 @@ class _UpdateBodyState extends State<UpdateBody> {
     final id = ModalRoute.of(context).settings.arguments;
     Future<void> updateCustomer() {
       return customers
-          .document(id)
-          .updateData({
+          .doc(id)
+          .update({
             'firstname': customer.firstName,
             'lastname': customer.lastName,
             'phone': customer.phone,
@@ -55,7 +56,7 @@ class _UpdateBodyState extends State<UpdateBody> {
     };
 
     return FutureBuilder<DocumentSnapshot>(
-      future: customers.document(id).get(),
+      future: customers.doc(id).get(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
@@ -67,7 +68,7 @@ class _UpdateBodyState extends State<UpdateBody> {
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
-          Map<String, dynamic> data = snapshot.data.data;
+          Map<String, dynamic> data = snapshot.data.data();
           customer = new Customer.fromCustomer(
             data['firstname'],
             data['lastname'],
@@ -160,7 +161,7 @@ class _UpdateBodyState extends State<UpdateBody> {
                     customer.identity = value;
                   },
                 ),
-                RaisedButton.icon(
+                ElevatedButton.icon(
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
                       updateCustomer();
